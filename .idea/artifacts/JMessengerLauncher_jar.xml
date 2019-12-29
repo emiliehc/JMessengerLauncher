@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="JMessengerLauncher:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/JMessengerLauncher_jar</output-path>
+    <root id="archive" name="JMessengerLauncher.jar">
+      <element id="module-output" name="JMessengerLauncher" />
+    </root>
+  </artifact>
+</component>
