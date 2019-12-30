@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/JMessengerLauncher_jar</output-path>
     <root id="archive" name="JMessengerLauncher.jar">
       <element id="module-output" name="JMessengerLauncher" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-20190722.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
