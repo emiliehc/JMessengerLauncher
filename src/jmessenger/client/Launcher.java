@@ -42,6 +42,10 @@ public class Launcher {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void main(String[] args) throws InterruptedException {
         try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {
+        }
+        try {
             // check for new updates
             JSONObject json = readJsonFromUrl("https://api.github.com/repos/njchensl/JMessenger/releases/latest");
             String version = json.get("tag_name").toString();
@@ -55,14 +59,14 @@ public class Launcher {
             } catch (IOException ignored) {
                 // treat it as not up to date
             }
-
+            // check if up to date
             if (!version.equals(myVersion)) {
                 // not up to date
                 System.out.println("not up to date");
                 JSONArray assets = json.getJSONArray("assets");
                 JFrame frame = new JFrame("Please wait");
                 frame.setPreferredSize(new Dimension(300, 300));
-                frame.add(new JLabel("Updating JMessenger"){{
+                frame.add(new JLabel("Updating JMessenger") {{
                     setFont(getFont().deriveFont(20f));
                     setHorizontalTextPosition(CENTER);
                     setVerticalTextPosition(CENTER);
@@ -70,6 +74,7 @@ public class Launcher {
                 frame.pack();
                 frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 frame.setVisible(true);
+                // find the link to download only JMessenger.jar
                 for (int i = 0; i < assets.length(); i++) {
                     JSONObject release = assets.getJSONObject(i);
                     String link = release.get("browser_download_url").toString();
@@ -100,13 +105,13 @@ public class Launcher {
         }
 
         try {
-            String[] options = new String[]{"Restart in Safe Mode", "Restart", "No"};
+            String[] options = new String[]{"Restart in Safe Mode", "Restart", "No", "Check Runtime Version and Restart"};
             String arg = "";
             while (true) {
                 Process p = Runtime.getRuntime().exec("java -jar client/JMessenger.jar " + arg);
                 int exit = p.waitFor();
                 if (exit == 0) {
-                    break;
+                    System.exit(0);
                 }
                 int result = JOptionPane.showOptionDialog(null, "The program has terminated abnormally. Would you like to start over?\nExit code: " + exit, "Message", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
                 if (result == 0) {
@@ -115,6 +120,19 @@ public class Launcher {
                 } else if (result == 1) {
                     // restart
                     arg = "";
+                } else if (result == 3) {
+                    // check runtime version
+                    ProcessBuilder   ps=new ProcessBuilder("java.exe","-version");
+                    ps.redirectErrorStream(true);
+                    Process pr = ps.start();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+                    String line;
+                    StringBuilder info = new StringBuilder();
+                    while ((line = in.readLine()) != null) {
+                        System.out.println(line);
+                        info.append(line).append("\n");
+                    }
+                    JOptionPane.showMessageDialog(null, info, "Java Version Check", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     // return
                     break;
